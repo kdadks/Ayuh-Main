@@ -1,6 +1,24 @@
 # Deployment Guide
 
-## Netlify Deployment (Recommended)
+## 🚀 Automated Deployment (Recommended)
+
+**NEW**: This project now includes automated deployment workflows!
+
+📋 **Quick Setup**: See [`DEPLOYMENT_SETUP.md`](./DEPLOYMENT_SETUP.md) for complete automated deployment setup.
+
+### Features
+- ✅ Automatic deployment on push to main branch
+- ✅ Deploy previews for pull requests
+- ✅ Security scanning and dependency checks
+- ✅ Build optimization and caching
+- ✅ SPA routing support
+
+### Files Added
+- [`netlify.toml`](./netlify.toml) - Netlify configuration
+- [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) - Main deployment workflow
+- [`.github/workflows/security.yml`](./.github/workflows/security.yml) - Security checks
+
+## Manual Netlify Deployment
 
 1. **Build Settings**:
    - Build command: `npm run build`

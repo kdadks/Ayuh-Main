@@ -113,7 +113,7 @@ export function Homeopathy() {
             </div>
             <div>
               <img
-                src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg"
+                src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                 alt="Homeopathic remedies and consultation"
                 className="rounded-2xl shadow-2xl w-full h-auto"
               />

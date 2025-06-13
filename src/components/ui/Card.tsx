@@ -11,7 +11,7 @@ export function Card({ children, className, hover = false }: CardProps) {
   return (
     <div
       className={clsx(
-        'bg-white rounded-xl shadow-sm border border-gray-200',
+        'bg-white rounded-xl shadow-sm border border-secondary-200',
         {
           'hover:shadow-md transition-shadow duration-200': hover,
         },
@@ -25,7 +25,7 @@ export function Card({ children, className, hover = false }: CardProps) {
 
 export function CardHeader({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={clsx('px-6 py-4 border-b border-gray-200', className)}>
+    <div className={clsx('px-6 py-4 border-b border-secondary-200', className)}>
       {children}
     </div>
   );
@@ -41,7 +41,7 @@ export function CardContent({ children, className }: { children: React.ReactNode
 
 export function CardFooter({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={clsx('px-6 py-4 border-t border-gray-200', className)}>
+    <div className={clsx('px-6 py-4 border-t border-secondary-200', className)}>
       {children}
     </div>
   );

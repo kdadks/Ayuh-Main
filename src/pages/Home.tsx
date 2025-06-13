@@ -110,7 +110,7 @@ export function Home() {
             </div>
             <div className="lg:pl-12 animate-slide-up">
               <img
-                src="https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg"
+                src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                 alt="Healthcare professional with patient"
                 className="rounded-2xl shadow-2xl w-full h-auto"
               />

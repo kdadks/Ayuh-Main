@@ -7,20 +7,30 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "./scripts/deploy.sh production",
+    "deploy:preview": "./scripts/deploy.sh preview",
+    "deploy:staging": "./scripts/deploy.sh staging",
+    "build:analyze": "npm run build && npx vite-bundle-analyzer dist"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/react-helmet": "^6.1.11",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.3.1",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.22.0",
+    "react-helmet": "^6.1.0",
     "react-hook-form": "^7.50.0",
-    "date-fns": "^3.3.1",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^6.22.0",
     "recharts": "^2.12.0",
-    "clsx": "^2.1.0"
+    "rehype-raw": "^7.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
+    "@types/node": "^24.0.1",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

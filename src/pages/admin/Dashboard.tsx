@@ -57,7 +57,7 @@ export function AdminDashboard() {
   const serviceData = [
     { service: 'Personal Care', hours: 1234, revenue: 55530 },
     { service: 'Medical Care', hours: 892, revenue: 31220 },
-    { service: 'Companionship', hours: 1567, hours: 47010 },
+    { service: 'Companionship', hours: 1567, revenue: 47010 },
     { service: 'Housekeeping', hours: 678, revenue: 27120 },
     { service: 'Transportation', hours: 456, revenue: 11400 }
   ];

@@ -22,8 +22,8 @@ export function Button({
           // Variants
           'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500': variant === 'primary',
           'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500': variant === 'secondary',
-          'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-primary-500': variant === 'outline',
-          'text-gray-700 hover:bg-gray-100 focus:ring-primary-500': variant === 'ghost',
+          'border border-secondary-200 bg-white text-secondary-700 hover:bg-secondary-50 focus:ring-primary-500': variant === 'outline',
+          'text-secondary-700 hover:bg-secondary-100 focus:ring-primary-500': variant === 'ghost',
           
           // Sizes
           'px-3 py-1.5 text-sm rounded-md': size === 'sm',

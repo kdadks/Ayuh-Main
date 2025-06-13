@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -34,9 +34,11 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-primary-100 p-2 rounded-lg">
-              <Heart className="h-6 w-6 text-primary-600" />
-            </div>
+            <img
+              src="/AYUH_Logo_2.png"
+              alt="Ayuh Clinic Logo"
+              className="h-10 w-auto"
+            />
             <span className="text-xl font-bold text-gray-900">Ayuh Clinic</span>
           </Link>
 

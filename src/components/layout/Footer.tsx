@@ -24,10 +24,16 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Services</h3>
             <ul className="space-y-2 text-gray-300">
-              <li><Link to="/services" className="hover:text-white transition-colors">Personal Care</Link></li>
-              <li><Link to="/services" className="hover:text-white transition-colors">Medical Care</Link></li>
-              <li><Link to="/services" className="hover:text-white transition-colors">Companionship</Link></li>
-              <li><Link to="/services" className="hover:text-white transition-colors">Housekeeping</Link></li>
+              <li>
+                <Link to="/homecare" className="hover:text-white transition-colors">
+                  Home Care Services
+                </Link>
+              </li>
+              <li>
+                <Link to="/homeopathy" className="hover:text-white transition-colors">
+                  Homeopathy Clinic
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -48,15 +54,15 @@ export function Footer() {
             <div className="space-y-3 text-gray-300">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 9050471087</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
-                <span>info@ayuhclinic.com</span>
+                <span>clinicayuh@gmail.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />
-                <span>Springfield, USA</span>
+                <span>Sector 45C , Chandigarh, India</span>
               </div>
             </div>
           </div>

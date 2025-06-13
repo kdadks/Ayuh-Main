@@ -23,3 +23,17 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Deployment
+.netlify/
+netlify-cli/
+.cache/
+
+# Build analysis
+stats.html
+bundle-analyzer-report.html
+
+# OS generated files
+Thumbs.db
+*.swp
+*.swo

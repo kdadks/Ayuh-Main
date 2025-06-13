@@ -9,7 +9,7 @@ export const mockHomecareServices: Service[] = [
     duration: 120,
     category: 'Personal Care',
     serviceType: 'homecare',
-    image: 'https://images.pexels.com/photos/3985328/pexels-photo-3985328.jpeg'
+    image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '2',
@@ -19,7 +19,7 @@ export const mockHomecareServices: Service[] = [
     duration: 60,
     category: 'Medical',
     serviceType: 'homecare',
-    image: 'https://images.pexels.com/photos/3683079/pexels-photo-3683079.jpeg'
+    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '3',
@@ -29,7 +29,7 @@ export const mockHomecareServices: Service[] = [
     duration: 180,
     category: 'Companionship',
     serviceType: 'homecare',
-    image: 'https://images.pexels.com/photos/5722164/pexels-photo-5722164.jpeg'
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '4',
@@ -39,7 +39,7 @@ export const mockHomecareServices: Service[] = [
     duration: 120,
     category: 'Domestic',
     serviceType: 'homecare',
-    image: 'https://images.pexels.com/photos/4099354/pexels-photo-4099354.jpeg'
+    image: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '5',
@@ -49,7 +49,7 @@ export const mockHomecareServices: Service[] = [
     duration: 90,
     category: 'Transportation',
     serviceType: 'homecare',
-    image: 'https://images.pexels.com/photos/5214413/pexels-photo-5214413.jpeg'
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '6',
@@ -59,7 +59,7 @@ export const mockHomecareServices: Service[] = [
     duration: 1440,
     category: 'Specialized',
     serviceType: 'homecare',
-    image: 'https://images.pexels.com/photos/6183321/pexels-photo-6183321.jpeg'
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   }
 ];
 
@@ -72,7 +72,7 @@ export const mockHomeopathyServices: Service[] = [
     duration: 90,
     category: 'Consultation',
     serviceType: 'homeopathy',
-    image: 'https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg'
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '8',
@@ -82,7 +82,7 @@ export const mockHomeopathyServices: Service[] = [
     duration: 45,
     category: 'Consultation',
     serviceType: 'homeopathy',
-    image: 'https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg'
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '9',
@@ -92,7 +92,7 @@ export const mockHomeopathyServices: Service[] = [
     duration: 30,
     category: 'Acute Care',
     serviceType: 'homeopathy',
-    image: 'https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg'
+    image: 'https://images.unsplash.com/photo-1594824720264-94f6ad9c5b83?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '10',
@@ -102,7 +102,7 @@ export const mockHomeopathyServices: Service[] = [
     duration: 60,
     category: 'Chronic Care',
     serviceType: 'homeopathy',
-    image: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg'
+    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '11',
@@ -112,7 +112,7 @@ export const mockHomeopathyServices: Service[] = [
     duration: 75,
     category: 'Constitutional',
     serviceType: 'homeopathy',
-    image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg'
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '12',
@@ -122,7 +122,7 @@ export const mockHomeopathyServices: Service[] = [
     duration: 60,
     category: 'Pediatric',
     serviceType: 'homeopathy',
-    image: 'https://images.pexels.com/photos/3985327/pexels-photo-3985327.jpeg'
+    image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   }
 ];
 
@@ -182,7 +182,7 @@ export const mockCaseStudies: CaseStudy[] = [
     treatment: 'Constitutional treatment with Sulphur 200C followed by Graphites 30C for local symptoms',
     outcome: '90% improvement in skin condition within 6 months, no steroid dependency',
     duration: '8 months',
-    image: 'https://images.pexels.com/photos/3985327/pexels-photo-3985327.jpeg'
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '2',
@@ -194,7 +194,7 @@ export const mockCaseStudies: CaseStudy[] = [
     treatment: 'Arsenicum Album 1M for anxiety, followed by Lycopodium 200C for digestive symptoms',
     outcome: 'Significant reduction in anxiety levels, improved sleep quality, better digestion',
     duration: '1 year',
-    image: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg'
+    image: 'https://images.unsplash.com/photo-1594824720264-94f6ad9c5b83?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '3',
@@ -206,7 +206,7 @@ export const mockCaseStudies: CaseStudy[] = [
     treatment: 'Rhus Toxicodendron 30C for joint stiffness, Bryonia 200C for pain management',
     outcome: 'Reduced joint inflammation, improved mobility, decreased dependency on conventional medication',
     duration: '18 months',
-    image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg'
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   }
 ];
 

@@ -98,7 +98,7 @@ export function Homecare() {
             </div>
             <div>
               <img
-                src="https://images.pexels.com/photos/5722264/pexels-photo-5722264.jpeg"
+                src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                 alt="Caregiver helping elderly patient"
                 className="rounded-2xl shadow-2xl w-full h-auto"
               />
