@@ -115,6 +115,11 @@ export function Header() {
               </div>
             ) : (
               <>
+                <Link to="/admin">
+                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-primary-600">
+                    Admin
+                  </Button>
+                </Link>
                 <Link to="/login">
                   <Button variant="outline">Sign In</Button>
                 </Link>
@@ -171,6 +176,11 @@ export function Header() {
                 </div>
               ) : (
                 <div className="pt-4 border-t border-gray-200 space-y-2">
+                  <Link to="/admin">
+                    <Button variant="ghost" size="sm" className="w-full justify-start text-gray-600">
+                      Administrator Portal
+                    </Button>
+                  </Link>
                   <Link to="/login">
                     <Button variant="outline" size="sm" className="w-full">
                       Sign In

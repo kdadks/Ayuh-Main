@@ -136,9 +136,134 @@ export interface Shift {
   id: string;
   employeeId: string;
   patientId: string;
+  patientName: string;
   date: string;
   startTime: string;
   endTime: string;
-  status: 'scheduled' | 'confirmed' | 'in-progress' | 'completed';
+  duration: number;
+  serviceType: string;
+  status: 'pending' | 'assigned' | 'accepted' | 'confirmed' | 'in-progress' | 'completed' | 'cancelled';
   location: string;
+  payment: number;
+  notes?: string;
+  specialInstructions?: string;
+}
+
+export interface Employee extends User {
+  employeeId: string;
+  phone: string;
+  address: string;
+  dateOfBirth: string;
+  emergencyContact: EmergencyContact;
+  hourlyRate: number;
+  availability: WeeklyAvailability;
+  skills: string[];
+  certifications: string[];
+}
+
+export interface WeeklyAvailability {
+  [key: string]: {
+    day: string;
+    available: boolean;
+    timeSlots: { start: string; end: string; }[];
+  };
+}
+
+export interface ArrivalConfirmation {
+  id: string;
+  shiftId: string;
+  employeeId: string;
+  arrivalTime: string;
+  location: string;
+  imageUrl: string;
+  notes?: string;
+  confirmedAt: string;
+}
+
+export interface Candidate extends User {
+  candidateId: string;
+  phone: string;
+  address: string;
+  dateOfBirth: string;
+  emergencyContact: EmergencyContact;
+  experience: number;
+  qualifications: string[];
+  documents: Document[];
+  interviewAssessment?: {
+    comments: string;
+    rating: number;
+    interviewer: string;
+    interviewDate: string;
+  };
+  policeVerification?: {
+    status: 'pending' | 'verified' | 'rejected';
+    documentUrl?: string;
+    verifiedDate?: string;
+  };
+  status: 'pending' | 'reviewed' | 'approved' | 'rejected';
+  appliedAt: string;
+}
+
+export interface CarePlan {
+  id: string;
+  name: string;
+  description: string;
+  services: string[];
+  duration: string;
+  frequency: string;
+  cost: number;
+  isCustom: boolean;
+}
+
+export interface Invoice {
+  id: string;
+  patientId: string;
+  patientName: string;
+  amount: number;
+  dueDate: string;
+  status: 'pending' | 'paid' | 'overdue' | 'cancelled';
+  items: InvoiceItem[];
+  issuedDate: string;
+  paidDate?: string;
+  paymentMethod?: string;
+}
+
+export interface InvoiceItem {
+  id: string;
+  description: string;
+  quantity: number;
+  rate: number;
+  amount: number;
+}
+
+export interface PaymentRecord {
+  id: string;
+  patientId: string;
+  patientName: string;
+  invoiceId: string;
+  amount: number;
+  paymentDate: string;
+  paymentMethod: 'cash' | 'card' | 'bank_transfer' | 'insurance';
+  status: 'completed' | 'pending' | 'failed' | 'refunded';
+  transactionId?: string;
+}
+
+export interface ShiftAssignment {
+  id: string;
+  shiftId: string;
+  employeeId: string;
+  employeeName: string;
+  patientId: string;
+  patientName: string;
+  assignedAt: string;
+  assignedBy: string;
+  status: 'assigned' | 'accepted' | 'declined' | 'completed';
+}
+
+export interface PatientExtended extends Patient {
+  carePlan?: CarePlan;
+  invoices: Invoice[];
+  paymentHistory: PaymentRecord[];
+  totalRevenue: number;
+  lastPayment?: PaymentRecord;
 }

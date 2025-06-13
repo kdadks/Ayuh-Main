@@ -15,6 +15,9 @@ import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
 import { PatientDashboard } from './pages/patient/Dashboard';
 import { AdminDashboard } from './pages/admin/Dashboard';
+import { AdminLogin } from './pages/admin/AdminLogin';
+import { AdminPortal } from './pages/admin/AdminPortal';
+import { EmployeeDashboard } from './pages/employee/Dashboard';
 import Blog from './pages/Blog';
 import HomeCareBlogs from './pages/blog/HomeCareBlogs';
 import HomeopathyBlogs from './pages/blog/HomeopathyBlogs';
@@ -43,8 +46,11 @@ function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/patient/dashboard" element={<PatientDashboard />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
             
             {/* Blog Routes */}
             <Route path="/blog" element={<Blog />} />
