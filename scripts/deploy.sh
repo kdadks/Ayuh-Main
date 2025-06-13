@@ -34,7 +34,10 @@ fi
 
 # Install dependencies
 echo -e "${BLUE}📦 Installing dependencies...${NC}"
-npm ci
+if ! npm ci; then
+    echo -e "${YELLOW}⚠️  npm ci failed, trying npm install...${NC}"
+    npm install
+fi
 
 # Run linting
 echo -e "${BLUE}🔍 Running linting...${NC}"

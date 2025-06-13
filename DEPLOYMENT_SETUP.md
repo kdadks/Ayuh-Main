@@ -150,6 +150,32 @@ The setup includes several optimizations:
 - **Compression**: Automatic Gzip/Brotli compression
 - **CDN**: Global edge network for fast loading
 
+### Bundle Size Optimization
+
+The current build produces a large JavaScript bundle (~1MB). Consider these optimizations:
+
+```bash
+# Analyze bundle size
+npm run build:analyze
+
+# Implement code splitting in vite.config.ts
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          charts: ['recharts'],
+          icons: ['lucide-react']
+        }
+      }
+    }
+  }
+})
+```
+
 ## Monitoring
 
 ### Deploy Notifications
