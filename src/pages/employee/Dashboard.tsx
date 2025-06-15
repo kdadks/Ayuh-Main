@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  User, 
-  Calendar, 
-  Clock, 
-  DollarSign, 
+import {
+  User,
+  Calendar,
+  Clock,
+  DollarSign,
   CheckCircle,
   MapPin,
   Camera,
   Settings,
-  Bell,
-  FileText,
-  Shield
+  FileText
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -20,6 +18,7 @@ import { AvailabilitySection } from '../../components/employee/AvailabilitySecti
 import { ShiftDetailsSection } from '../../components/employee/ShiftDetailsSection';
 import { PaymentInfoSection } from '../../components/employee/PaymentInfoSection';
 import { JobArrivalSection } from '../../components/employee/JobArrivalSection';
+import { ShiftNotifications } from '../../components/shift/ShiftNotifications';
 
 type TabType = 'overview' | 'personal' | 'availability' | 'shifts' | 'payments' | 'arrival';
 
@@ -279,12 +278,17 @@ export function EmployeeDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, {user?.firstName}!
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Manage your shifts, availability, and profile information
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Welcome back, {user?.firstName}!
+              </h1>
+              <p className="text-gray-600 mt-2">
+                Manage your shifts, availability, and profile information
+              </p>
+            </div>
+            <ShiftNotifications userType="employee" userId={user?.id} />
+          </div>
         </div>
 
         {/* Navigation Tabs */}

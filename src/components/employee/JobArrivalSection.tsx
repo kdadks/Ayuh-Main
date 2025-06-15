@@ -113,18 +113,31 @@ export function JobArrivalSection() {
       
       const shift = activeShifts.find(s => s.id === shiftId);
       if (shift) {
+        const currentTime = new Date();
+        const scheduledTime = new Date(`2000-01-01 ${shift.scheduledStart}`);
+        const arrivalTime = currentTime.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        // Determine arrival status
+        const timeDifference = currentTime.getHours() * 60 + currentTime.getMinutes() -
+                             (scheduledTime.getHours() * 60 + scheduledTime.getMinutes());
+        let arrivalStatus: 'confirmed' | 'pending' | 'late' = 'confirmed';
+        
+        if (timeDifference > 15) { // More than 15 minutes late
+          arrivalStatus = 'late';
+        }
+
         const newRecord: ArrivalRecord = {
           id: Date.now().toString(),
           shiftId: shiftId,
           patientName: shift.patientName,
-          arrivalTime: new Date().toLocaleTimeString('en-GB', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          }),
+          arrivalTime: arrivalTime,
           location: shift.patientAddress,
           imageUrl: previewUrl,
-          status: 'confirmed',
-          notes: notes || 'Arrival confirmed',
+          status: arrivalStatus,
+          notes: notes || `Arrival confirmed${arrivalStatus === 'late' ? ' - Late arrival' : ''}`,
           uploadedAt: new Date().toISOString()
         };
         
@@ -138,7 +151,10 @@ export function JobArrivalSection() {
           fileInputRef.current.value = '';
         }
         
-        alert('Arrival confirmed successfully!');
+        // Notify admin of arrival (in real app, this would be an API call)
+        console.log(`Arrival confirmed for shift ${shiftId} - Status: ${arrivalStatus}`);
+        
+        alert(`Arrival confirmed successfully!${arrivalStatus === 'late' ? ' Note: Marked as late arrival.' : ''}`);
       }
     } catch (error) {
       alert('Failed to confirm arrival. Please try again.');

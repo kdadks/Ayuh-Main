@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card, CardContent, CardHeader } from '../../components/ui/Card';
 import { useAuth } from '../../hooks/useAuth';
+import QuickLoginButtons from '../../components/auth/QuickLoginButtons';
 
 interface LoginForm {
   email: string;
@@ -23,33 +24,52 @@ export function Login() {
   const onSubmit = async (data: LoginForm) => {
     try {
       setError('');
-      const user = await login(data.email, data.password);
+      console.log('Form submit attempt:', data);
+      
+      // Trim whitespace from inputs
+      const email = data.email?.trim();
+      const password = data.password?.trim();
+      
+      if (!email || !password) {
+        setError('Please enter both email and password');
+        return;
+      }
+      
+      const user = await login(email, password);
+      console.log('Login result:', user);
       
       if (user) {
-        // Redirect based on user role
-        switch (user.role) {
-          case 'patient':
-            navigate('/patient/dashboard');
-            break;
-          case 'caregiver':
-            navigate('/caregiver/dashboard');
-            break;
-          case 'employee':
-            navigate('/employee/dashboard');
-            break;
-          case 'homeopath':
-            navigate('/homeopath/dashboard');
-            break;
-          case 'admin':
-            navigate('/admin/dashboard');
-            break;
-          default:
-            navigate('/');
-        }
+        console.log('Login successful, navigating for role:', user.role);
+        
+        // Define routes for each role
+        const routes = {
+          'patient': '/patient/dashboard',
+          'caregiver': '/caregiver/dashboard',
+          'employee': '/employee/dashboard',
+          'candidate': '/candidate/dashboard',
+          'homeopath': '/homeopath/dashboard',
+          'admin': '/admin/dashboard'
+        };
+        
+        const route = routes[user.role as keyof typeof routes] || '/';
+        console.log('Navigating to:', route);
+        
+        // Navigate with replace to ensure it works
+        navigate(route, { replace: true });
+        
+        // Backup navigation
+        setTimeout(() => {
+          if (window.location.pathname === '/auth/login') {
+            window.location.href = route;
+          }
+        }, 100);
+        
       } else {
+        console.log('Login failed - no user returned');
         setError('Invalid email or password');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('Login failed. Please try again.');
     }
   };
@@ -81,6 +101,7 @@ export function Login() {
                 <li>Patient: patient@ayuhclinic.com / password123</li>
                 <li>Caregiver: caregiver@ayuhclinic.com / password123</li>
                 <li>Employee: employee@ayuhclinic.com / password123</li>
+                <li>Candidate: candidate@ayuhclinic.com / password123</li>
                 <li>Homeopath: homeopath@ayuhclinic.com / password123</li>
                 <li>Admin: admin@ayuhclinic.com / password123</li>
               </ul>
@@ -108,11 +129,7 @@ export function Login() {
                   icon={<Lock className="h-5 w-5" />}
                   error={errors.password?.message}
                   {...register('password', {
-                    required: 'Password is required',
-                    minLength: {
-                      value: 6,
-                      message: 'Password must be at least 6 characters'
-                    }
+                    required: 'Password is required'
                   })}
                 />
                 <button
@@ -151,6 +168,33 @@ export function Login() {
                 {isSubmitting ? 'Signing in...' : 'Sign in'}
               </Button>
             </form>
+
+            <QuickLoginButtons onLogin={(user) => {
+              setError('');
+              // Handle successful login from quick buttons
+              switch (user.role) {
+                case 'patient':
+                  navigate('/patient/dashboard');
+                  break;
+                case 'caregiver':
+                  navigate('/caregiver/dashboard');
+                  break;
+                case 'employee':
+                  navigate('/employee/dashboard');
+                  break;
+                case 'candidate':
+                  navigate('/candidate/dashboard');
+                  break;
+                case 'homeopath':
+                  navigate('/homeopath/dashboard');
+                  break;
+                case 'admin':
+                  navigate('/admin/dashboard');
+                  break;
+                default:
+                  navigate('/');
+              }
+            }} />
           </CardContent>
         </Card>
       </div>

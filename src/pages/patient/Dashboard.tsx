@@ -1,26 +1,47 @@
-import React from 'react';
-import { 
-  Calendar, 
-  User, 
-  FileText, 
-  CreditCard, 
+import React, { useState } from 'react';
+import {
+  Calendar,
+  User,
+  FileText,
+  CreditCard,
   Bell,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Plus,
+  UserPlus,
+  Receipt,
+  DollarSign
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
-import { mockAppointments } from '../../utils/data';
+import { mockAppointments, mockPatientInvoices, mockPatientPayments } from '../../utils/data';
+import { PatientRegistrationForm, PatientRegistrationData } from '../../components/patient/PatientRegistrationForm';
+import { PatientRegistrationDetails } from '../../components/patient/PatientRegistrationDetails';
+import { PatientBillingHistory } from '../../components/patient/PatientBillingHistory';
+import { PatientPaymentHistory } from '../../components/patient/PatientPaymentHistory';
+import { PatientRegistration } from '../../types';
+import { patientRegistrationService } from '../../services/patientRegistrationService';
 import { format, parseISO } from 'date-fns';
+
+type DashboardView = 'overview' | 'register' | 'registration-details' | 'billing' | 'payments';
 
 export function PatientDashboard() {
   const { user } = useAuth();
+  const [currentView, setCurrentView] = useState<DashboardView>('overview');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [patientRegistration, setPatientRegistration] = useState<PatientRegistration | undefined>(
+    user?.id ? patientRegistrationService.getPatientRegistration(user.id) : undefined
+  );
   
   const upcomingAppointments = mockAppointments.filter(
     apt => apt.status === 'scheduled' || apt.status === 'confirmed'
   ).slice(0, 3);
+
+  // Get patient data
+  const patientInvoices = mockPatientInvoices.filter(inv => inv.patientId === user?.id);
+  const patientPayments = mockPatientPayments.filter(pay => pay.patientId === user?.id);
 
   const stats = [
     {
@@ -37,13 +58,13 @@ export function PatientDashboard() {
     },
     {
       label: 'Active Care Plan',
-      value: 'Premium',
+      value: patientRegistration ? 'Active' : 'Not Registered',
       icon: CheckCircle,
-      color: 'text-purple-600'
+      color: patientRegistration ? 'text-purple-600' : 'text-orange-600'
     },
     {
-      label: 'Pending Actions',
-      value: '2',
+      label: 'Outstanding Amount',
+      value: `₹${patientInvoices.filter(inv => inv.status === 'pending').reduce((sum, inv) => sum + inv.amount, 0).toFixed(0)}`,
       icon: AlertCircle,
       color: 'text-orange-600'
     }
@@ -63,7 +84,7 @@ export function PatientDashboard() {
       id: '2',
       type: 'payment',
       title: 'Payment Processed',
-      description: '$90.00 for February services',
+      description: '₹1,200.00 for March services',
       time: '1 day ago',
       icon: CreditCard,
       iconColor: 'text-blue-600'
@@ -79,7 +100,128 @@ export function PatientDashboard() {
     }
   ];
 
-  return (
+  const handleRegistrationSubmit = async (data: PatientRegistrationData) => {
+    if (!user?.id) {
+      alert('Error: User not found. Please log in again.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const result = await patientRegistrationService.submitRegistration(user.id, data);
+      
+      if (result.success && result.registration) {
+        // Update local state
+        setPatientRegistration(result.registration);
+        
+        // Show success message
+        alert(`Registration submitted successfully! Your reference number is: ${result.registration.referenceNumber}`);
+        
+        // Switch to registration details view
+        setCurrentView('registration-details');
+      } else {
+        alert(`Registration failed: ${result.error || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      console.error('Registration submission error:', error);
+      alert('Registration failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderNavigation = () => (
+    <div className="mb-6">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant={currentView === 'overview' ? 'primary' : 'outline'}
+          onClick={() => setCurrentView('overview')}
+          className="flex items-center"
+        >
+          <User className="mr-2 h-4 w-4" />
+          Overview
+        </Button>
+        
+        {!patientRegistration ? (
+          <Button
+            variant={currentView === 'register' ? 'primary' : 'outline'}
+            onClick={() => setCurrentView('register')}
+            className="flex items-center"
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Register
+          </Button>
+        ) : (
+          <Button
+            variant={currentView === 'registration-details' ? 'primary' : 'outline'}
+            onClick={() => setCurrentView('registration-details')}
+            className="flex items-center"
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Registration Details
+          </Button>
+        )}
+        
+        <Button
+          variant={currentView === 'billing' ? 'primary' : 'outline'}
+          onClick={() => setCurrentView('billing')}
+          className="flex items-center"
+        >
+          <Receipt className="mr-2 h-4 w-4" />
+          Billing History
+        </Button>
+        
+        <Button
+          variant={currentView === 'payments' ? 'primary' : 'outline'}
+          onClick={() => setCurrentView('payments')}
+          className="flex items-center"
+        >
+          <DollarSign className="mr-2 h-4 w-4" />
+          Payment History
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (currentView) {
+      case 'register':
+        return (
+          <PatientRegistrationForm
+            onSubmit={handleRegistrationSubmit}
+            isSubmitting={isSubmitting}
+          />
+        );
+        
+      case 'registration-details':
+        return patientRegistration ? (
+          <PatientRegistrationDetails registration={patientRegistration} />
+        ) : (
+          <div className="text-center py-8">
+            <UserPlus className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600">No registration found. Please register first.</p>
+            <Button
+              className="mt-4"
+              onClick={() => setCurrentView('register')}
+            >
+              Register Now
+            </Button>
+          </div>
+        );
+        
+      case 'billing':
+        return <PatientBillingHistory invoices={patientInvoices} />;
+        
+      case 'payments':
+        return <PatientPaymentHistory payments={patientPayments} />;
+        
+      default:
+        return renderOverview();
+    }
+  };
+
+  const renderOverview = () => (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -174,6 +316,24 @@ export function PatientDashboard() {
                 <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
               </CardHeader>
               <CardContent className="space-y-3">
+                {!patientRegistration ? (
+                  <Button
+                    className="w-full justify-start"
+                    onClick={() => setCurrentView('register')}
+                  >
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Register for Services
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => setCurrentView('registration-details')}
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    View Registration
+                  </Button>
+                )}
                 <Button className="w-full justify-start">
                   <Calendar className="mr-2 h-4 w-4" />
                   Schedule Appointment
@@ -182,13 +342,21 @@ export function PatientDashboard() {
                   <User className="mr-2 h-4 w-4" />
                   Update Profile
                 </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <FileText className="mr-2 h-4 w-4" />
-                  View Care Plan
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => setCurrentView('billing')}
+                >
+                  <Receipt className="mr-2 h-4 w-4" />
+                  View Billing
                 </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Billing & Payments
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => setCurrentView('payments')}
+                >
+                  <DollarSign className="mr-2 h-4 w-4" />
+                  Payment History
                 </Button>
               </CardContent>
             </Card>
@@ -217,6 +385,15 @@ export function PatientDashboard() {
             </Card>
           </div>
         </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {renderNavigation()}
+        {renderContent()}
       </div>
     </div>
   );

@@ -178,7 +178,7 @@ export function PaymentInfoSection() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-2xl font-bold text-gray-900">₹{paymentSummary.thisMonthEarnings}</p>
+                <p className="text-2xl font-bold text-gray-900">₹{paymentSummary.thisMonthEarnings.toLocaleString()}</p>
                 <p className={`text-sm mt-1 flex items-center ${
                   earnings >= 0 ? 'text-green-600' : 'text-red-600'
                 }`}>
@@ -277,7 +277,7 @@ export function PaymentInfoSection() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-gray-900">₹{record.totalAmount}</p>
+                      <p className="text-2xl font-bold text-gray-900">₹{record.totalAmount.toLocaleString()}</p>
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(record.status)}`}>
                         {getStatusIcon(record.status)}
                         <span className="ml-1 capitalize">{record.status}</span>

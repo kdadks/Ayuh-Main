@@ -9,7 +9,7 @@ export interface User {
   createdAt: string;
 }
 
-export type UserRole = 'patient' | 'caregiver' | 'employee' | 'admin' | 'homeopath';
+export type UserRole = 'patient' | 'caregiver' | 'employee' | 'admin' | 'homeopath' | 'candidate';
 
 export interface Patient extends User {
   patientId: string;
@@ -208,11 +208,35 @@ export interface CarePlan {
   id: string;
   name: string;
   description: string;
-  services: string[];
+  services: CarePlanService[];
   duration: string;
   frequency: string;
-  cost: number;
+  totalCost: number;
   isCustom: boolean;
+  createdAt: string;
+  createdBy: string;
+  status: 'active' | 'inactive' | 'draft';
+}
+
+export interface CarePlanService {
+  serviceId: string;
+  serviceName: string;
+  serviceType: 'homecare' | 'homeopathy';
+  category: string;
+  price: number;
+  duration: number;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'as-needed';
+  isIncluded: boolean;
+}
+
+export interface CarePlanTemplate {
+  id: string;
+  name: string;
+  description: string;
+  targetDemographic: string;
+  recommendedServices: string[];
+  estimatedCost: number;
+  isDefault: boolean;
 }
 
 export interface Invoice {
@@ -266,4 +290,23 @@ export interface PatientExtended extends Patient {
   paymentHistory: PaymentRecord[];
   totalRevenue: number;
   lastPayment?: PaymentRecord;
+}
+
+export interface PatientRegistration {
+  id: string;
+  patientId: string;
+  referenceNumber: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  address: string;
+  selectedCarePlan: string[];
+  comments: string;
+  medicalCondition: string;
+  familyDoctor: string;
+  emergencyContactNumber: string;
+  careNeeds: string;
+  submittedAt: string;
+  status: 'pending' | 'approved' | 'rejected' | 'active';
 }

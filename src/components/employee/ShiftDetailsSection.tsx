@@ -125,14 +125,32 @@ export function ShiftDetailsSection() {
   });
 
   const handleAcceptShift = (shiftId: string) => {
-    setShifts(prev => prev.map(shift => 
+    setShifts(prev => prev.map(shift =>
       shift.id === shiftId ? { ...shift, status: 'accepted' as const } : shift
     ));
+    
+    // In real app, this would send notification to admin
+    console.log(`Shift ${shiftId} accepted by employee`);
   };
 
   const handleDeclineShift = (shiftId: string) => {
-    setShifts(prev => prev.map(shift => 
+    setShifts(prev => prev.map(shift =>
       shift.id === shiftId ? { ...shift, status: 'cancelled' as const } : shift
+    ));
+    
+    // In real app, this would send notification to admin for reassignment
+    console.log(`Shift ${shiftId} declined by employee - needs reassignment`);
+  };
+
+  const handleStartShift = (shiftId: string) => {
+    setShifts(prev => prev.map(shift =>
+      shift.id === shiftId ? { ...shift, status: 'in-progress' as const } : shift
+    ));
+  };
+
+  const handleCompleteShift = (shiftId: string) => {
+    setShifts(prev => prev.map(shift =>
+      shift.id === shiftId ? { ...shift, status: 'completed' as const } : shift
     ));
   };
 
@@ -283,6 +301,28 @@ export function ShiftDetailsSection() {
                         Decline
                       </Button>
                     </div>
+                  )}
+
+                  {shift.status === 'accepted' && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleStartShift(shift.id)}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Clock className="h-4 w-4 mr-2" />
+                      Start Shift
+                    </Button>
+                  )}
+
+                  {shift.status === 'in-progress' && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleCompleteShift(shift.id)}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Complete
+                    </Button>
                   )}
                 </div>
               </div>

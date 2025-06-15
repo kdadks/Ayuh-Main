@@ -77,7 +77,7 @@ export function Services() {
                       <div className="flex items-center space-x-1">
                         <DollarSign className="h-5 w-5 text-primary-600" />
                         <span className="text-2xl font-bold text-primary-600">
-                          {service.price}
+                          ₹{service.price.toLocaleString()}
                         </span>
                         <span className="text-gray-500">/hour</span>
                       </div>

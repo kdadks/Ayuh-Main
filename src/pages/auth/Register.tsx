@@ -47,6 +47,9 @@ export function Register() {
         case 'caregiver':
           navigate('/caregiver/dashboard');
           break;
+        case 'candidate':
+          navigate('/candidate/dashboard');
+          break;
         case 'homeopath':
           navigate('/homeopath/dashboard');
           break;
@@ -153,6 +156,7 @@ export function Register() {
                   <option value="">Select your role</option>
                   <option value="patient">Patient (seeking care/treatment)</option>
                   <option value="caregiver">Caregiver (applying to provide home care)</option>
+                  <option value="candidate">Candidate (job application)</option>
                   <option value="homeopath">Homeopath (applying to provide treatment)</option>
                 </select>
                 {errors.role && (

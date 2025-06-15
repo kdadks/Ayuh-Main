@@ -22,6 +22,7 @@ export function Header() {
       case 'patient': return '/patient/dashboard';
       case 'caregiver': return '/caregiver/dashboard';
       case 'employee': return '/employee/dashboard';
+      case 'candidate': return '/candidate/dashboard';
       case 'homeopath': return '/homeopath/dashboard';
       case 'admin': return '/admin/dashboard';
       default: return '/';

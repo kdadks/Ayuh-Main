@@ -204,7 +204,7 @@ export function Homeopathy() {
                       <div className="flex items-center space-x-1">
                         <DollarSign className="h-5 w-5 text-secondary-600" />
                         <span className="text-2xl font-bold text-secondary-600">
-                          {service.price}
+                          ₹{service.price.toLocaleString()}
                         </span>
                       </div>
                       <Button size="sm" className="bg-secondary-600 hover:bg-secondary-700">

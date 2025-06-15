@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { PatientExtended, CarePlan, Invoice } from '../../../types';
+import { mockServices } from '../../../utils/data';
 
 export function PatientManagement() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,31 +34,143 @@ export function PatientManagement() {
       id: '1',
       name: 'Basic Care Package',
       description: 'Essential daily care services including personal hygiene, medication management, and light housekeeping',
-      services: ['Personal Care', 'Medication Management', 'Light Housekeeping'],
+      services: [
+        {
+          serviceId: '1',
+          serviceName: 'Personal Care Assistance',
+          serviceType: 'homecare',
+          category: 'Personal Care',
+          price: 45,
+          duration: 120,
+          frequency: 'daily',
+          isIncluded: true
+        },
+        {
+          serviceId: '2',
+          serviceName: 'Medication Management',
+          serviceType: 'homecare',
+          category: 'Medical',
+          price: 35,
+          duration: 60,
+          frequency: 'daily',
+          isIncluded: true
+        },
+        {
+          serviceId: '4',
+          serviceName: 'Light Housekeeping',
+          serviceType: 'homecare',
+          category: 'Domestic',
+          price: 40,
+          duration: 120,
+          frequency: 'daily',
+          isIncluded: true
+        }
+      ],
       duration: '4 hours daily',
       frequency: 'Monday to Friday',
-      cost: 180.00,
-      isCustom: false
+      totalCost: 720.00,
+      isCustom: false,
+      createdAt: '2024-01-01T00:00:00Z',
+      createdBy: 'admin',
+      status: 'active'
     },
     {
       id: '2',
       name: 'Comprehensive Care Package',
       description: 'Full-service care including medical monitoring, transportation, and companionship',
-      services: ['Personal Care', 'Medical Care', 'Transportation', 'Companionship'],
+      services: [
+        {
+          serviceId: '1',
+          serviceName: 'Personal Care Assistance',
+          serviceType: 'homecare',
+          category: 'Personal Care',
+          price: 45,
+          duration: 120,
+          frequency: 'daily',
+          isIncluded: true
+        },
+        {
+          serviceId: '2',
+          serviceName: 'Medication Management',
+          serviceType: 'homecare',
+          category: 'Medical',
+          price: 35,
+          duration: 60,
+          frequency: 'daily',
+          isIncluded: true
+        },
+        {
+          serviceId: '5',
+          serviceName: 'Transportation Services',
+          serviceType: 'homecare',
+          category: 'Transportation',
+          price: 25,
+          duration: 90,
+          frequency: 'weekly',
+          isIncluded: true
+        },
+        {
+          serviceId: '3',
+          serviceName: 'Companionship Services',
+          serviceType: 'homecare',
+          category: 'Companionship',
+          price: 30,
+          duration: 180,
+          frequency: 'daily',
+          isIncluded: true
+        }
+      ],
       duration: '8 hours daily',
       frequency: 'Daily',
-      cost: 320.00,
-      isCustom: false
+      totalCost: 1280.00,
+      isCustom: false,
+      createdAt: '2024-01-01T00:00:00Z',
+      createdBy: 'admin',
+      status: 'active'
     },
     {
       id: '3',
       name: '24/7 Live-in Care',
       description: 'Round-the-clock professional care and supervision',
-      services: ['Personal Care', 'Medical Care', 'Companionship', 'Emergency Response'],
+      services: [
+        {
+          serviceId: '6',
+          serviceName: '24/7 Live-in Care',
+          serviceType: 'homecare',
+          category: 'Specialized',
+          price: 200,
+          duration: 1440,
+          frequency: 'daily',
+          isIncluded: true
+        },
+        {
+          serviceId: '1',
+          serviceName: 'Personal Care Assistance',
+          serviceType: 'homecare',
+          category: 'Personal Care',
+          price: 45,
+          duration: 120,
+          frequency: 'daily',
+          isIncluded: true
+        },
+        {
+          serviceId: '3',
+          serviceName: 'Companionship Services',
+          serviceType: 'homecare',
+          category: 'Companionship',
+          price: 30,
+          duration: 180,
+          frequency: 'daily',
+          isIncluded: true
+        }
+      ],
       duration: '24 hours',
       frequency: 'Daily',
-      cost: 600.00,
-      isCustom: false
+      totalCost: 8250.00,
+      isCustom: false,
+      createdAt: '2024-01-01T00:00:00Z',
+      createdBy: 'admin',
+      status: 'active'
     }
   ]);
 
@@ -315,7 +428,7 @@ export function PatientManagement() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ${patients.reduce((sum, p) => sum + p.totalRevenue, 0).toLocaleString()}
+                  ₹{patients.reduce((sum, p) => sum + p.totalRevenue, 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -432,7 +545,7 @@ export function PatientManagement() {
                       {patient.carePlan ? (
                         <div className="text-sm text-gray-900">
                           <div className="font-medium">{patient.carePlan.name}</div>
-                          <div className="text-gray-500">${patient.carePlan.cost}/month</div>
+                          <div className="text-gray-500">₹{patient.carePlan.totalCost}/month</div>
                         </div>
                       ) : (
                         <span className="text-sm text-gray-500 italic">No care plan assigned</span>
@@ -455,7 +568,7 @@ export function PatientManagement() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        ${patient.totalRevenue.toLocaleString()}
+                        ₹{patient.totalRevenue.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -632,7 +745,7 @@ export function PatientManagement() {
             {selectedPatient.carePlan && (
               <div className="p-4 bg-blue-50 rounded-lg mb-6">
                 <h4 className="font-medium text-gray-900 mb-2">Current Care Plan</h4>
-                <p className="text-sm text-gray-600">{selectedPatient.carePlan.name} - ${selectedPatient.carePlan.cost}/month</p>
+                <p className="text-sm text-gray-600">{selectedPatient.carePlan.name} - ₹{selectedPatient.carePlan.totalCost.toLocaleString()}/month</p>
               </div>
             )}
 
@@ -643,7 +756,7 @@ export function PatientManagement() {
                 <div key={plan.id} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h5 className="font-medium text-gray-900">{plan.name}</h5>
-                    <span className="text-lg font-bold text-gray-900">${plan.cost}/month</span>
+                    <span className="text-lg font-bold text-gray-900">₹{plan.totalCost.toLocaleString()}/month</span>
                   </div>
                   <p className="text-sm text-gray-600 mb-3">{plan.description}</p>
                   <div className="flex items-center justify-between">
@@ -708,7 +821,7 @@ export function PatientManagement() {
                             {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600">Amount: ${invoice.amount.toFixed(2)}</p>
+                        <p className="text-sm text-gray-600">Amount: ₹{invoice.amount.toLocaleString()}</p>
                         <p className="text-sm text-gray-600">Due: {new Date(invoice.dueDate).toLocaleDateString()}</p>
                         {invoice.paidDate && (
                           <p className="text-sm text-green-600">Paid: {new Date(invoice.paidDate).toLocaleDateString()}</p>
@@ -730,7 +843,7 @@ export function PatientManagement() {
                       <div key={payment.id} className="border border-gray-200 rounded-lg p-3">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-medium">{payment.id}</span>
-                          <span className="text-green-600 font-medium">${payment.amount.toFixed(2)}</span>
+                          <span className="text-green-600 font-medium">₹{payment.amount.toLocaleString()}</span>
                         </div>
                         <p className="text-sm text-gray-600">Date: {new Date(payment.paymentDate).toLocaleDateString()}</p>
                         <p className="text-sm text-gray-600">Method: {payment.paymentMethod.replace('_', ' ').toUpperCase()}</p>
@@ -752,12 +865,12 @@ export function PatientManagement() {
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-gray-600">Total Revenue</p>
-                  <p className="text-lg font-bold text-gray-900">${selectedPatient.totalRevenue.toFixed(2)}</p>
+                  <p className="text-lg font-bold text-gray-900">₹{selectedPatient.totalRevenue.toFixed(2)}</p>
                 </div>
                 <div>
                   <p className="text-gray-600">Outstanding</p>
                   <p className="text-lg font-bold text-orange-600">
-                    ${selectedPatient.invoices
+                    ₹{selectedPatient.invoices
                       .filter(i => i.status === 'pending' || i.status === 'overdue')
                       .reduce((sum, i) => sum + i.amount, 0)
                       .toFixed(2)}

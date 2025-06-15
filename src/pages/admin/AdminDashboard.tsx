@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  Users, 
-  UserCheck, 
+import {
+  Users,
+  UserCheck,
   Briefcase,
   Calendar,
   Heart,
@@ -11,7 +11,8 @@ import {
   AlertTriangle,
   Clock,
   ChevronRight,
-  LogOut
+  LogOut,
+  Package
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -21,16 +22,19 @@ import { EmployeeManagement } from './components/EmployeeManagement';
 import { ShiftManagement } from './components/ShiftManagement';
 import { PatientManagement } from './components/PatientManagement';
 import { RevenueManagement } from './components/RevenueManagement';
+import { CarePlanManagement } from './components/CarePlanManagement';
+import { ShiftNotifications } from '../../components/shift/ShiftNotifications';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
-type AdminSection = 
-  | 'overview' 
-  | 'users' 
-  | 'candidates' 
-  | 'employees' 
-  | 'shifts' 
-  | 'patients' 
+type AdminSection =
+  | 'overview'
+  | 'users'
+  | 'candidates'
+  | 'employees'
+  | 'shifts'
+  | 'patients'
+  | 'careplans'
   | 'revenue';
 
 export function AdminDashboard() {
@@ -70,7 +74,7 @@ export function AdminDashboard() {
     },
     {
       label: 'Monthly Revenue',
-      value: '$234,567',
+      value: '₹234,567',
       change: '+18%',
       icon: DollarSign,
       color: 'text-purple-600',
@@ -113,7 +117,13 @@ export function AdminDashboard() {
       id: 'patients' as AdminSection,
       label: 'Patient Management',
       icon: Heart,
-      description: 'Manage patients, care plans, billing'
+      description: 'Manage patients, assignments, billing'
+    },
+    {
+      id: 'careplans' as AdminSection,
+      label: 'Care Plan Management',
+      icon: Package,
+      description: 'Create, customize, and assign care plans'
     },
     {
       id: 'revenue' as AdminSection,
@@ -135,6 +145,8 @@ export function AdminDashboard() {
         return <ShiftManagement />;
       case 'patients':
         return <PatientManagement />;
+      case 'careplans':
+        return <CarePlanManagement />;
       case 'revenue':
         return <RevenueManagement />;
       default:
@@ -262,7 +274,7 @@ export function AdminDashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Pending Payments</span>
-                <span className="text-sm font-medium text-orange-600">$12,350</span>
+                <span className="text-sm font-medium text-orange-600">₹12,350</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">System Health</span>
@@ -301,9 +313,10 @@ export function AdminDashboard() {
                 <p className="text-sm font-medium text-gray-900">Welcome, {user?.firstName}</p>
                 <p className="text-xs text-gray-600">Administrator</p>
               </div>
+              <ShiftNotifications userType="admin" />
               {activeSection !== 'overview' && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setActiveSection('overview')}
                 >
                   Back to Overview

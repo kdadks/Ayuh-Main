@@ -223,7 +223,7 @@ export function RevenueManagement() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">${totalRevenue.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-gray-900">₹{totalRevenue.toLocaleString()}</p>
                 <p className="text-sm text-green-600 mt-1">+18% from last month</p>
               </div>
             </div>
@@ -238,7 +238,7 @@ export function RevenueManagement() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Pending Payments</p>
-                <p className="text-2xl font-bold text-gray-900">${pendingRevenue.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-gray-900">₹{pendingRevenue.toLocaleString()}</p>
                 <p className="text-sm text-yellow-600 mt-1">{paymentRecords.filter(p => p.status === 'pending').length} transactions</p>
               </div>
             </div>
@@ -269,7 +269,7 @@ export function RevenueManagement() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Average Payment</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ${(totalRevenue / paymentRecords.filter(p => p.status === 'completed').length).toFixed(0)}
+                  ₹{(totalRevenue / paymentRecords.filter(p => p.status === 'completed').length).toFixed(0)}
                 </p>
                 <p className="text-sm text-blue-600 mt-1">Per transaction</p>
               </div>
@@ -305,7 +305,7 @@ export function RevenueManagement() {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip formatter={(value, name) => [
-                    name === 'revenue' ? `$${value.toLocaleString()}` : value,
+                    name === 'revenue' ? `₹${value.toLocaleString()}` : value,
                     name === 'revenue' ? 'Revenue' : 'Payments'
                   ]} />
                   <Line type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={3} />
@@ -354,7 +354,7 @@ export function RevenueManagement() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
               <YAxis dataKey="service" type="category" width={120} />
-              <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+              <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
               <Bar dataKey="revenue" fill="#0ea5e9" />
             </BarChart>
           </ResponsiveContainer>
@@ -477,7 +477,7 @@ export function RevenueManagement() {
                       <div className="text-sm text-gray-500">ID: {payment.patientId}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-gray-900">${payment.amount.toFixed(2)}</div>
+                      <div className="text-sm font-bold text-gray-900">₹{payment.amount.toLocaleString()}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPaymentMethodColor(payment.paymentMethod)}`}>
@@ -537,16 +537,16 @@ export function RevenueManagement() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">${totalRevenue.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-green-600">₹{totalRevenue.toLocaleString()}</p>
               <p className="text-sm text-gray-600 mt-1">Total Collected Revenue</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-yellow-600">${pendingRevenue.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-yellow-600">₹{pendingRevenue.toLocaleString()}</p>
               <p className="text-sm text-gray-600 mt-1">Pending Collections</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-blue-600">
-                ${(totalRevenue + pendingRevenue).toLocaleString()}
+                ₹{(totalRevenue + pendingRevenue).toLocaleString()}
               </p>
               <p className="text-sm text-gray-600 mt-1">Total Expected Revenue</p>
             </div>

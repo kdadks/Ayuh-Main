@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  MapPin, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  MapPin,
   Search,
   Filter,
   CheckCircle,
@@ -11,23 +11,47 @@ import {
   X,
   RotateCcw,
   Eye,
-  Plus
+  Plus,
+  Edit,
+  BarChart3
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Shift, Employee, ShiftAssignment } from '../../../types';
+import { ShiftReports } from '../../../components/shift/ShiftReports';
+import { EmployeeAvailabilityView } from '../../../components/admin/EmployeeAvailabilityView';
 
 export function ShiftManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'assigned' | 'completed' | 'cancelled'>('all');
   const [dateFilter, setDateFilter] = useState('');
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showReports, setShowReports] = useState(false);
+  const [showEmployeeAvailability, setShowEmployeeAvailability] = useState(false);
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
+  const [editingShift, setEditingShift] = useState<Shift | null>(null);
+
+  // Form data for shift creation/editing
+  const [formData, setFormData] = useState({
+    patientId: '',
+    patientName: '',
+    date: '',
+    startTime: '',
+    endTime: '',
+    serviceType: '',
+    location: '',
+    payment: '',
+    notes: '',
+    specialInstructions: '',
+    employeeId: ''
+  });
 
   // Mock shifts data with extended properties
-  const [shifts] = useState<(Shift & { 
-    employeeName?: string; 
+  const [shifts, setShifts] = useState<(Shift & {
+    employeeName?: string;
     arrivalStatus?: 'on-time' | 'late' | 'no-show' | 'pending';
     arrivalTime?: string;
   })[]>([
@@ -167,6 +191,57 @@ export function ShiftManagement() {
     }
   ]);
 
+  // Mock patients data for shift creation
+  const [patients] = useState([
+    {
+      id: '1',
+      patientId: 'PAT001',
+      name: 'Sarah Johnson',
+      address: '123 Oak Street, Springfield, IL',
+      phone: '+1-555-0100'
+    },
+    {
+      id: '2',
+      patientId: 'PAT002',
+      name: 'Robert Wilson',
+      address: '456 Maple Avenue, Springfield, IL',
+      phone: '+1-555-0102'
+    },
+    {
+      id: '3',
+      patientId: 'PAT003',
+      name: 'Margaret Thompson',
+      address: '789 Pine Road, Springfield, IL',
+      phone: '+1-555-0104'
+    },
+    {
+      id: '4',
+      patientId: 'PAT004',
+      name: 'William Davis',
+      address: '321 Elm Street, Springfield, IL',
+      phone: '+1-555-0106'
+    },
+    {
+      id: '5',
+      patientId: 'PAT005',
+      name: 'Dorothy Brown',
+      address: '654 Cedar Lane, Springfield, IL',
+      phone: '+1-555-0108'
+    }
+  ]);
+
+  // Service types for shift creation
+  const serviceTypes = [
+    'Personal Care Assistance',
+    'Medical Care',
+    'Companionship',
+    'Transportation',
+    'Live-in Care',
+    'Light Housekeeping',
+    'Medication Management',
+    'Physical Therapy Support'
+  ];
+
   const filteredShifts = shifts.filter(shift => {
     const matchesSearch = 
       shift.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -180,22 +255,242 @@ export function ShiftManagement() {
     return matchesSearch && matchesStatus && matchesDate;
   });
 
+  const resetForm = () => {
+    setFormData({
+      patientId: '',
+      patientName: '',
+      date: '',
+      startTime: '',
+      endTime: '',
+      serviceType: '',
+      location: '',
+      payment: '',
+      notes: '',
+      specialInstructions: '',
+      employeeId: ''
+    });
+  };
+
+  const calculateDuration = (startTime: string, endTime: string): number => {
+    if (!startTime || !endTime) return 0;
+    const start = new Date(`2000-01-01 ${startTime}`);
+    const end = new Date(`2000-01-01 ${endTime}`);
+    return Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60 * 60));
+  };
+
+  const calculatePayment = (duration: number, serviceType: string): number => {
+    const baseRates: { [key: string]: number } = {
+      'Personal Care Assistance': 25.50,
+      'Medical Care': 28.00,
+      'Companionship': 22.00,
+      'Transportation': 25.00,
+      'Live-in Care': 25.00,
+      'Light Housekeeping': 20.00,
+      'Medication Management': 26.00,
+      'Physical Therapy Support': 30.00
+    };
+    const rate = baseRates[serviceType] || 25.00;
+    return duration * rate;
+  };
+
+  const handleCreateShift = () => {
+    const duration = calculateDuration(formData.startTime, formData.endTime);
+    const payment = formData.payment ? parseFloat(formData.payment) : calculatePayment(duration, formData.serviceType);
+    const selectedPatient = patients.find(p => p.id === formData.patientId);
+    
+    const newShift = {
+      id: (shifts.length + 1).toString(),
+      employeeId: formData.employeeId || '',
+      employeeName: formData.employeeId ? availableEmployees.find(e => e.id === formData.employeeId)?.firstName + ' ' + availableEmployees.find(e => e.id === formData.employeeId)?.lastName : undefined,
+      patientId: formData.patientId,
+      patientName: formData.patientName || selectedPatient?.name || '',
+      date: formData.date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      duration,
+      serviceType: formData.serviceType,
+      status: (formData.employeeId ? 'assigned' : 'pending') as Shift['status'],
+      location: formData.location || selectedPatient?.address || '',
+      payment,
+      notes: formData.notes,
+      specialInstructions: formData.specialInstructions,
+      arrivalStatus: 'pending' as 'on-time' | 'late' | 'no-show' | 'pending'
+    };
+
+    setShifts(prev => [...prev, newShift]);
+    setShowCreateModal(false);
+    resetForm();
+  };
+
+  const handleEditShift = () => {
+    if (!editingShift) return;
+    
+    const duration = calculateDuration(formData.startTime, formData.endTime);
+    const payment = formData.payment ? parseFloat(formData.payment) : calculatePayment(duration, formData.serviceType);
+    const selectedPatient = patients.find(p => p.id === formData.patientId);
+    
+    const updatedShift = {
+      ...editingShift,
+      employeeId: formData.employeeId || '',
+      employeeName: formData.employeeId ? availableEmployees.find(e => e.id === formData.employeeId)?.firstName + ' ' + availableEmployees.find(e => e.id === formData.employeeId)?.lastName : undefined,
+      patientId: formData.patientId,
+      patientName: formData.patientName || selectedPatient?.name || '',
+      date: formData.date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      duration,
+      serviceType: formData.serviceType,
+      status: (formData.employeeId ? 'assigned' : 'pending') as Shift['status'],
+      location: formData.location || selectedPatient?.address || '',
+      payment,
+      notes: formData.notes,
+      specialInstructions: formData.specialInstructions
+    };
+
+    setShifts(prev => prev.map(shift => shift.id === editingShift.id ? updatedShift : shift));
+    setShowEditModal(false);
+    setEditingShift(null);
+    resetForm();
+  };
+
+  const handlePatientChange = (patientId: string) => {
+    const patient = patients.find(p => p.id === patientId);
+    setFormData(prev => ({
+      ...prev,
+      patientId,
+      patientName: patient?.name || '',
+      location: patient?.address || ''
+    }));
+  };
+
+  const handleServiceTypeChange = (serviceType: string) => {
+    const duration = calculateDuration(formData.startTime, formData.endTime);
+    const calculatedPayment = calculatePayment(duration, serviceType);
+    
+    setFormData(prev => ({
+      ...prev,
+      serviceType,
+      payment: calculatedPayment > 0 ? calculatedPayment.toFixed(2) : ''
+    }));
+  };
+
+  const handleTimeChange = (field: 'startTime' | 'endTime', value: string) => {
+    const newFormData = { ...formData, [field]: value };
+    const duration = calculateDuration(
+      field === 'startTime' ? value : formData.startTime,
+      field === 'endTime' ? value : formData.endTime
+    );
+    const calculatedPayment = calculatePayment(duration, formData.serviceType);
+    
+    setFormData({
+      ...newFormData,
+      payment: calculatedPayment > 0 ? calculatedPayment.toFixed(2) : formData.payment
+    });
+  };
+
+  const openEditModal = (shift: any) => {
+    setEditingShift(shift);
+    setFormData({
+      patientId: shift.patientId,
+      patientName: shift.patientName,
+      date: shift.date,
+      startTime: shift.startTime,
+      endTime: shift.endTime,
+      serviceType: shift.serviceType,
+      location: shift.location,
+      payment: shift.payment.toString(),
+      notes: shift.notes || '',
+      specialInstructions: shift.specialInstructions || '',
+      employeeId: shift.employeeId || ''
+    });
+    setShowEditModal(true);
+  };
+
   const handleAssignEmployee = (shiftId: string, employeeId: string) => {
-    console.log('Assigning employee', employeeId, 'to shift', shiftId);
+    const employee = availableEmployees.find(e => e.id === employeeId);
+    setShifts(prev => prev.map(shift =>
+      shift.id === shiftId
+        ? {
+            ...shift,
+            employeeId,
+            employeeName: employee ? `${employee.firstName} ${employee.lastName}` : '',
+            status: 'assigned' as Shift['status'],
+            arrivalStatus: 'pending' as 'on-time' | 'late' | 'no-show' | 'pending'
+          }
+        : shift
+    ));
     setShowAssignModal(false);
+    setShowEmployeeAvailability(false);
     setSelectedShift(null);
+    
+    // Send notification to employee (in real app, this would be an API call)
+    console.log(`Notification sent to ${employee?.firstName} ${employee?.lastName} for shift assignment`);
+  };
+
+  const handleEmployeeSelect = (employee: any) => {
+    if (selectedShift) {
+      handleAssignEmployee(selectedShift.id, employee.id);
+    }
   };
 
   const handleReassignShift = (shiftId: string) => {
     const shift = shifts.find(s => s.id === shiftId);
     if (shift) {
       setSelectedShift(shift);
-      setShowAssignModal(true);
+      setShowEmployeeAvailability(true);
     }
   };
 
   const handleCancelShift = (shiftId: string) => {
-    console.log('Cancelling shift:', shiftId);
+    setShifts(prev => prev.map(shift =>
+      shift.id === shiftId ? { ...shift, status: 'cancelled' as Shift['status'] } : shift
+    ));
+  };
+
+  const handleDeleteShift = (shiftId: string) => {
+    if (window.confirm('Are you sure you want to delete this shift? This action cannot be undone.')) {
+      setShifts(prev => prev.filter(shift => shift.id !== shiftId));
+    }
+  };
+
+  const handleCompleteShift = (shiftId: string) => {
+    setShifts(prev => prev.map(shift =>
+      shift.id === shiftId
+        ? {
+            ...shift,
+            status: 'completed' as Shift['status'],
+            arrivalStatus: shift.arrivalStatus === 'pending' ? 'on-time' : shift.arrivalStatus
+          }
+        : shift
+    ));
+  };
+
+  const handleMarkInProgress = (shiftId: string) => {
+    setShifts(prev => prev.map(shift =>
+      shift.id === shiftId
+        ? {
+            ...shift,
+            status: 'in-progress' as Shift['status']
+          }
+        : shift
+    ));
+  };
+
+  const checkEmployeeAvailability = (employeeId: string, date: string, startTime: string, endTime: string): boolean => {
+    // Check if employee has conflicting shifts
+    const conflictingShifts = shifts.filter(shift =>
+      shift.employeeId === employeeId &&
+      shift.date === date &&
+      shift.status !== 'cancelled' &&
+      shift.id !== selectedShift?.id && // Exclude current shift when editing
+      (
+        (startTime >= shift.startTime && startTime < shift.endTime) ||
+        (endTime > shift.startTime && endTime <= shift.endTime) ||
+        (startTime <= shift.startTime && endTime >= shift.endTime)
+      )
+    );
+    
+    return conflictingShifts.length === 0;
   };
 
   const getStatusColor = (status: string) => {
@@ -253,10 +548,26 @@ export function ShiftManagement() {
             Assign employees to shifts, monitor compliance, and track attendance
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Create New Shift
-        </Button>
+        <div className="flex space-x-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowEmployeeAvailability(!showEmployeeAvailability)}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            {showEmployeeAvailability ? 'Hide Employee View' : 'Employee Availability'}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowReports(!showReports)}
+          >
+            <BarChart3 className="h-4 w-4 mr-2" />
+            {showReports ? 'Hide Reports' : 'View Reports'}
+          </Button>
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create New Shift
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -472,7 +783,7 @@ export function ShiftManagement() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        ${shift.payment.toFixed(2)}
+                        ₹{shift.payment.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -487,7 +798,7 @@ export function ShiftManagement() {
                             size="sm"
                             onClick={() => {
                               setSelectedShift(shift);
-                              setShowAssignModal(true);
+                              setShowEmployeeAvailability(true);
                             }}
                           >
                             <Users className="h-4 w-4 mr-1" />
@@ -497,23 +808,72 @@ export function ShiftManagement() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleReassignShift(shift.id)}
+                            onClick={() => {
+                              setSelectedShift(shift);
+                              setShowEmployeeAvailability(true);
+                            }}
                           >
                             <RotateCcw className="h-4 w-4 mr-1" />
                             Reassign
                           </Button>
                         )}
 
-                        {shift.status !== 'completed' && shift.status !== 'cancelled' && (
+                        {shift.status === 'assigned' && (
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleCancelShift(shift.id)}
-                            className="text-red-600 border-red-300 hover:bg-red-50"
+                            onClick={() => handleMarkInProgress(shift.id)}
+                            className="text-green-600 border-green-300 hover:bg-green-50"
                           >
-                            <X className="h-4 w-4 mr-1" />
-                            Cancel
+                            <Clock className="h-4 w-4 mr-1" />
+                            Start
                           </Button>
+                        )}
+
+                        {shift.status === 'in-progress' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCompleteShift(shift.id)}
+                            className="text-green-600 border-green-300 hover:bg-green-50"
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Complete
+                          </Button>
+                        )}
+
+                        {shift.status !== 'completed' && shift.status !== 'cancelled' && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => openEditModal(shift)}
+                              className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                            >
+                              <Edit className="h-4 w-4 mr-1" />
+                              Edit
+                            </Button>
+                            
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCancelShift(shift.id)}
+                              className="text-red-600 border-red-300 hover:bg-red-50"
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Cancel
+                            </Button>
+                            
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDeleteShift(shift.id)}
+                              className="text-red-600 border-red-300 hover:bg-red-50"
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Delete
+                            </Button>
+                          </>
                         )}
                       </div>
                     </td>
@@ -546,7 +906,7 @@ export function ShiftManagement() {
                   <div>
                     <p><strong>Date:</strong> {selectedShift.date}</p>
                     <p><strong>Time:</strong> {selectedShift.startTime} - {selectedShift.endTime}</p>
-                    <p><strong>Payment:</strong> ${selectedShift.payment.toFixed(2)}</p>
+                    <p><strong>Payment:</strong> ₹{selectedShift.payment.toLocaleString()}</p>
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">
@@ -572,16 +932,36 @@ export function ShiftManagement() {
                               {employee.firstName} {employee.lastName}
                             </p>
                             <p className="text-sm text-gray-500">{employee.employeeId}</p>
-                            <p className="text-sm text-gray-500">${employee.hourlyRate}/hr</p>
+                            <p className="text-sm text-gray-500">₹{employee.hourlyRate.toLocaleString()}/hr</p>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="text-sm text-gray-600 mb-2">
                             Skills: {employee.skills.slice(0, 2).join(', ')}
                           </div>
+                          {selectedShift && !checkEmployeeAvailability(
+                            employee.id,
+                            selectedShift.date,
+                            selectedShift.startTime,
+                            selectedShift.endTime
+                          ) ? (
+                            <div className="text-xs text-red-600 mb-2">
+                              ⚠️ Scheduling conflict detected
+                            </div>
+                          ) : (
+                            <div className="text-xs text-green-600 mb-2">
+                              ✅ Available
+                            </div>
+                          )}
                           <Button
                             size="sm"
                             onClick={() => handleAssignEmployee(selectedShift.id, employee.id)}
+                            disabled={selectedShift && !checkEmployeeAvailability(
+                              employee.id,
+                              selectedShift.date,
+                              selectedShift.startTime,
+                              selectedShift.endTime
+                            )}
                           >
                             Assign
                           </Button>
@@ -605,6 +985,496 @@ export function ShiftManagement() {
               </Button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Create Shift Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-gray-900">Create New Shift</h3>
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    resetForm();
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Patient Information */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">Patient Information</h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Select Patient
+                    </label>
+                    <select
+                      value={formData.patientId}
+                      onChange={(e) => handlePatientChange(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select a patient...</option>
+                      {patients.map((patient) => (
+                        <option key={patient.id} value={patient.id}>
+                          {patient.name} ({patient.patientId})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Patient Name
+                    </label>
+                    <Input
+                      value={formData.patientName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, patientName: e.target.value }))}
+                      placeholder="Enter patient name if not in list"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Location
+                    </label>
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="Patient address"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Shift Details */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">Shift Details</h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Service Type
+                    </label>
+                    <select
+                      value={formData.serviceType}
+                      onChange={(e) => handleServiceTypeChange(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select service type...</option>
+                      {serviceTypes.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Start Time
+                      </label>
+                      <input
+                        type="time"
+                        value={formData.startTime}
+                        onChange={(e) => handleTimeChange('startTime', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        End Time
+                      </label>
+                      <input
+                        type="time"
+                        value={formData.endTime}
+                        onChange={(e) => handleTimeChange('endTime', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Payment Amount (₹)
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={formData.payment}
+                      onChange={(e) => setFormData(prev => ({ ...prev, payment: e.target.value }))}
+                      placeholder="Auto-calculated or manual entry"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Assignment and Notes */}
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Assign Employee (Optional)
+                  </label>
+                  <select
+                    value={formData.employeeId}
+                    onChange={(e) => setFormData(prev => ({ ...prev, employeeId: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Leave unassigned</option>
+                    {availableEmployees.map((employee) => (
+                      <option key={employee.id} value={employee.id}>
+                        {employee.firstName} {employee.lastName} - ₹{employee.hourlyRate.toLocaleString()}/hr
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Notes
+                  </label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Any additional notes..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Special Instructions
+                  </label>
+                  <textarea
+                    value={formData.specialInstructions}
+                    onChange={(e) => setFormData(prev => ({ ...prev, specialInstructions: e.target.value }))}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Special care instructions..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6 pt-6 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    resetForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleCreateShift}>
+                  Create Shift
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Shift Modal */}
+      {showEditModal && editingShift && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-gray-900">Edit Shift</h3>
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingShift(null);
+                    resetForm();
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Patient Information */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">Patient Information</h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Select Patient
+                    </label>
+                    <select
+                      value={formData.patientId}
+                      onChange={(e) => handlePatientChange(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select a patient...</option>
+                      {patients.map((patient) => (
+                        <option key={patient.id} value={patient.id}>
+                          {patient.name} ({patient.patientId})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Patient Name
+                    </label>
+                    <Input
+                      value={formData.patientName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, patientName: e.target.value }))}
+                      placeholder="Enter patient name if not in list"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Location
+                    </label>
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="Patient address"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Shift Details */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">Shift Details</h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Service Type
+                    </label>
+                    <select
+                      value={formData.serviceType}
+                      onChange={(e) => handleServiceTypeChange(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select service type...</option>
+                      {serviceTypes.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Start Time
+                      </label>
+                      <input
+                        type="time"
+                        value={formData.startTime}
+                        onChange={(e) => handleTimeChange('startTime', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        End Time
+                      </label>
+                      <input
+                        type="time"
+                        value={formData.endTime}
+                        onChange={(e) => handleTimeChange('endTime', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Payment Amount (₹)
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={formData.payment}
+                      onChange={(e) => setFormData(prev => ({ ...prev, payment: e.target.value }))}
+                      placeholder="Auto-calculated or manual entry"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Assignment and Notes */}
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Assign Employee (Optional)
+                  </label>
+                  <select
+                    value={formData.employeeId}
+                    onChange={(e) => setFormData(prev => ({ ...prev, employeeId: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Leave unassigned</option>
+                    {availableEmployees.map((employee) => (
+                      <option key={employee.id} value={employee.id}>
+                        {employee.firstName} {employee.lastName} - ₹{employee.hourlyRate.toLocaleString()}/hr
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Notes
+                  </label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Any additional notes..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Special Instructions
+                  </label>
+                  <textarea
+                    value={formData.specialInstructions}
+                    onChange={(e) => setFormData(prev => ({ ...prev, specialInstructions: e.target.value }))}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Special care instructions..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6 pt-6 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingShift(null);
+                    resetForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleEditShift}>
+                  Update Shift
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Employee Availability View */}
+      {showEmployeeAvailability && (
+        <div className="mt-8">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">Employee Availability by Location</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setShowEmployeeAvailability(false);
+                    setSelectedShift(null);
+                  }}
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Close
+                </Button>
+              </div>
+              {selectedShift && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                  <h3 className="font-medium text-blue-900 mb-2">Selected Shift for Assignment</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-blue-700 font-medium">Patient:</span>
+                      <p className="text-blue-800">{selectedShift.patientName}</p>
+                    </div>
+                    <div>
+                      <span className="text-blue-700 font-medium">Service:</span>
+                      <p className="text-blue-800">{selectedShift.serviceType}</p>
+                    </div>
+                    <div>
+                      <span className="text-blue-700 font-medium">Date & Time:</span>
+                      <p className="text-blue-800">{selectedShift.date} {selectedShift.startTime}-{selectedShift.endTime}</p>
+                    </div>
+                    <div>
+                      <span className="text-blue-700 font-medium">Location:</span>
+                      <p className="text-blue-800">{selectedShift.location}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardHeader>
+            <CardContent>
+              <EmployeeAvailabilityView
+                selectedDate={selectedShift?.date || new Date().toISOString().split('T')[0]}
+                selectedShift={selectedShift ? {
+                  date: selectedShift.date,
+                  startTime: selectedShift.startTime,
+                  endTime: selectedShift.endTime,
+                  location: selectedShift.location,
+                  serviceType: selectedShift.serviceType
+                } : undefined}
+                onEmployeeSelect={handleEmployeeSelect}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Reports Section */}
+      {showReports && (
+        <div className="mt-8">
+          <ShiftReports />
         </div>
       )}
     </div>
